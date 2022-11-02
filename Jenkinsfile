@@ -46,13 +46,16 @@ pipeline {
       }
     
     // Subtask 3 
-    //stage('Deploy to app host') {
-     //steps{  
-         //script {
-                //sh 
-              //  sh "sudo docker run -itd -p 8080:8080 --name node-app ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}:${IMAGE_TAG}"
-         //}
-       // }
-      //}
+    stage('Deploy to app host') {
+     steps{  
+         script {
+              sh '''if [ $(sudo docker ps -a | grep app-new | wc -l) -gt 0 ]; then
+              sudo docker stop app-new
+              sudo docker rm -f app-new
+              fi ''' 
+              sh "sudo docker run -itd -p 8080:8080 --name app-new ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}:${IMAGE_TAG}"
+         }
+        }
+      }
     }
 }
